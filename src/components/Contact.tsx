@@ -7,6 +7,7 @@ import {
   ClockIcon,
   CopyIcon,
   DiscordIcon,
+  ExternalLinkIcon,
   GitHubIcon,
   InstagramIcon,
   LinkedInIcon,
@@ -19,13 +20,16 @@ import { profile } from '@/data/portafolio';
 
 export function Contact() {
   const [copied, setCopied] = useState(false);
-  const [formSubmitted, setFormSubmitted] = useState(false);
+  const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
+  const [errorMessage, setErrorMessage] = useState('');
   const [formData, setFormData] = useState({
     name: '',
     email: '',
     subject: '',
     message: '',
   });
+
+  const web3FormsKey = process.env.NEXT_PUBLIC_WEB3FORMS_KEY;
 
   const handleCopyEmail = async () => {
     if (!profile.email) return;
@@ -34,26 +38,64 @@ export function Contact() {
       setCopied(true);
       setTimeout(() => setCopied(false), 2500);
     } catch {
-      // Fallback en caso de que el navegador bloquee el portapapeles
       setCopied(true);
       setTimeout(() => setCopied(false), 2500);
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!profile.email) return;
 
-    // Genera el enlace mailto pre-rellenado con la información del formulario
-    const mailtoSubject = encodeURIComponent(
+    // Si está configurada la clave de Web3Forms, envía el correo en segundo plano
+    if (web3FormsKey) {
+      setStatus('loading');
+      setErrorMessage('');
+
+      try {
+        const response = await fetch('https://api.web3forms.com/submit', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Accept: 'application/json',
+          },
+          body: JSON.stringify({
+            access_key: web3FormsKey,
+            name: formData.name,
+            email: formData.email,
+            subject: formData.subject || `Contacto de ${formData.name} desde el Portafolio`,
+            message: formData.message,
+            from_name: `${formData.name} (Portafolio Web)`,
+          }),
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+          setStatus('success');
+        } else {
+          setStatus('error');
+          setErrorMessage(data.message || 'Hubo un error al enviar el mensaje.');
+        }
+      } catch {
+        setStatus('error');
+        setErrorMessage('Error de conexión. Por favor usa los enlaces directos de correo.');
+      }
+      return;
+    }
+
+    // Fallback garantizado cuando aún no hay API key configurada en Vercel:
+    // Abre Gmail Web directamente en una nueva pestaña (funciona en cualquier navegador sin apps locales)
+    const encodedSubject = encodeURIComponent(
       formData.subject || `Contacto de ${formData.name} desde el Portafolio`
     );
-    const mailtoBody = encodeURIComponent(
-      `Hola Juan Felipe,\n\nMi nombre es: ${formData.name}\nMi correo es: ${formData.email}\n\nMensaje:\n${formData.message}`
+    const encodedBody = encodeURIComponent(
+      `Hola Juan Felipe,\n\nMi nombre es: ${formData.name}\nMi correo: ${formData.email}\n\nMensaje:\n${formData.message}`
     );
 
-    window.location.href = `mailto:${profile.email}?subject=${mailtoSubject}&body=${mailtoBody}`;
-    setFormSubmitted(true);
+    const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${profile.email}&su=${encodedSubject}&body=${encodedBody}`;
+    window.open(gmailUrl, '_blank', 'noopener,noreferrer');
+    setStatus('success');
   };
 
   const socialIcons: Record<string, typeof GitHubIcon> = {
@@ -62,6 +104,8 @@ export function Contact() {
     Instagram: InstagramIcon,
     Discord: DiscordIcon,
   };
+
+  const gmailDirectUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${profile.email}&su=Contacto%20desde%20Portafolio`;
 
   return (
     <section id="contacto" className="relative py-24 sm:py-32 border-t border-border overflow-hidden">
@@ -125,12 +169,16 @@ export function Contact() {
                 </button>
 
                 <a
-                  href={`mailto:${profile.email}`}
-                  id="btn-send-mail"
+                  href={gmailDirectUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  id="btn-open-gmail"
                   className="inline-flex items-center gap-2 rounded-xl border border-border bg-white/[0.02] px-4 py-2.5 text-xs font-semibold text-foreground transition-colors hover:border-accent/40 hover:bg-white/[0.05]"
+                  title="Abrir directamente en Gmail Web"
                 >
                   <MailIcon className="size-4 text-accent" />
-                  <span>Abrir cliente</span>
+                  <span>Abrir en Gmail</span>
+                  <ExternalLinkIcon className="size-3 text-muted" />
                 </a>
               </div>
             </div>
@@ -190,25 +238,26 @@ export function Contact() {
                 Envíame un mensaje
               </h3>
               <p className="mt-1 text-sm text-muted">
-                Completa los datos y se abrirá tu aplicación de correo para enviar tu solicitud al instante.
+                Escribe tu mensaje y te responderé a tu correo a la brevedad.
               </p>
 
-              {formSubmitted ? (
+              {status === 'success' ? (
                 <div className="mt-8 rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-6 text-center">
                   <span className="mx-auto grid size-12 place-items-center rounded-full bg-emerald-500/20 text-emerald-400">
                     <CheckIcon className="size-6" />
                   </span>
                   <h4 className="mt-3 text-lg font-semibold text-foreground">
-                    ¡Mensaje preparado!
+                    ¡Mensaje listo!
                   </h4>
                   <p className="mt-2 text-sm text-muted">
-                    Se ha abierto tu cliente de correo para enviar la comunicación a{' '}
-                    <strong className="text-foreground">{profile.email}</strong>.
+                    {web3FormsKey
+                      ? 'Tu mensaje ha sido enviado correctamente a Juan Felipe.'
+                      : 'Se ha abierto tu aplicación de correo para enviar el mensaje directamente.'}
                   </p>
                   <button
                     type="button"
                     onClick={() => {
-                      setFormSubmitted(false);
+                      setStatus('idle');
                       setFormData({ name: '', email: '', subject: '', message: '' });
                     }}
                     className="mt-5 text-xs font-mono text-accent hover:underline"
@@ -218,6 +267,12 @@ export function Contact() {
                 </div>
               ) : (
                 <form onSubmit={handleSubmit} className="mt-6 space-y-4">
+                  {status === 'error' && (
+                    <div className="rounded-xl border border-red-500/30 bg-red-500/10 p-4 text-xs text-red-300">
+                      {errorMessage || 'Error al enviar. Puedes escribir directamente a pip3.solutions@gmail.com'}
+                    </div>
+                  )}
+
                   <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                     <div>
                       <label htmlFor="contact-name" className="block font-mono text-xs text-muted mb-1.5">
@@ -283,9 +338,10 @@ export function Contact() {
                   <button
                     type="submit"
                     id="contact-submit-btn"
-                    className="group inline-flex w-full items-center justify-center gap-2 rounded-xl bg-foreground px-6 py-3 text-sm font-semibold text-background transition-all hover:bg-white hover:shadow-[0_0_24px_-6px_var(--accent)]"
+                    disabled={status === 'loading'}
+                    className="group inline-flex w-full items-center justify-center gap-2 rounded-xl bg-foreground px-6 py-3 text-sm font-semibold text-background transition-all hover:bg-white hover:shadow-[0_0_24px_-6px_var(--accent)] disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    <span>Enviar Mensaje</span>
+                    <span>{status === 'loading' ? 'Enviando mensaje...' : 'Enviar Mensaje'}</span>
                     <SendIcon className="size-4 transition-transform group-hover:translate-x-1" />
                   </button>
                 </form>
