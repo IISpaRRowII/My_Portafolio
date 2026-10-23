@@ -3,3 +3,6 @@
  */
 
 export * from './types';
+export * from './services/projects.service';
+export { ProjectCard } from './components/ProjectCard';
+export { ProjectsSection } from './components/ProjectsSection';
