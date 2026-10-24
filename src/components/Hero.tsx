@@ -17,10 +17,7 @@ export function Hero() {
   ];
 
   return (
-    <section className="relative overflow-hidden py-20 sm:py-28 lg:py-32 min-h-[580px] flex items-center">
-      {/* Red neuronal interactiva 3D en forma de cerebro conectando ideas */}
-      <NeuralNetwork variant="hero" />
-
+    <section className="relative overflow-hidden py-16 sm:py-24 lg:py-28 min-h-[580px] flex items-center">
       {/* Luz ambiental sutil de fondo (glow gradient) */}
       <div
         aria-hidden="true"
@@ -30,7 +27,7 @@ export function Hero() {
       </div>
 
       <Container className="relative z-10 w-full">
-        <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-12 lg:gap-8">
+        <div className="grid grid-cols-1 items-center gap-10 lg:grid-cols-12 lg:gap-8">
           {/* Columna Izquierda: Información principal y llamados a la acción */}
           <div className="lg:col-span-7">
             {/* Badge de disponibilidad flotante */}
@@ -99,8 +96,10 @@ export function Hero() {
             </div>
           </div>
 
-          {/* Columna Derecha: Escenario completamente despejado y limpio para el Cerebro 3D */}
-          <div className="hidden lg:col-span-5 lg:block pointer-events-none" />
+          {/* Columna Derecha (Desktop) / Bloque Dedicado (Móvil): Escenario Dedicado para el Cerebro 3D */}
+          <div className="lg:col-span-5 w-full h-[400px] sm:h-[450px] lg:h-[540px] relative rounded-3xl border border-white/10 bg-gradient-to-b from-white/[0.03] to-transparent p-1 shadow-[0_16px_40px_-12px_rgba(0,0,0,0.85)] backdrop-blur-sm overflow-hidden">
+            <NeuralNetwork variant="hero" />
+          </div>
         </div>
       </Container>
     </section>

@@ -652,11 +652,10 @@ export function NeuralNetwork({
       const cosX = Math.cos(mouseStateRef.current.rotX);
       const sinX = Math.sin(mouseStateRef.current.rotX);
 
-      const isDesktop = width >= 1024;
-      const brainCenterX = isDesktop ? width * 0.72 : width * 0.5;
-      const brainCenterY = isDesktop ? height * 0.48 : height * 0.42;
-      const brainRadius = Math.min(width * 0.32, height * 0.48, 360);
-      const fov = 850;
+      const brainCenterX = width * 0.5;
+      const brainCenterY = height * 0.39;
+      const brainRadius = Math.min(width * 0.36, height * 0.33, 175);
+      const fov = 750;
 
       const currentNodes = brainNodesRef.current;
       const currentConns = connectionsRef.current;
@@ -865,8 +864,15 @@ export function NeuralNetwork({
         mouseStateRef.current.targetRotX = -normY * 0.45 + 0.08;
       };
 
+      const handleTouchEnd = () => {
+        mouseStateRef.current.active = false;
+        mouseStateRef.current.targetRotX = 0.08;
+      };
+
       container.addEventListener('touchstart', handleTouch, { passive: true });
       container.addEventListener('touchmove', handleTouch, { passive: true });
+      container.addEventListener('touchend', handleTouchEnd, { passive: true });
+      container.addEventListener('touchcancel', handleTouchEnd, { passive: true });
 
       return () => {
         cancelAnimationFrame(animationFrameId);
@@ -876,6 +882,8 @@ export function NeuralNetwork({
         container.removeEventListener('mouseleave', handleMouseLeave);
         container.removeEventListener('touchstart', handleTouch);
         container.removeEventListener('touchmove', handleTouch);
+        container.removeEventListener('touchend', handleTouchEnd);
+        container.removeEventListener('touchcancel', handleTouchEnd);
       };
     }
 
@@ -910,28 +918,27 @@ export function NeuralNetwork({
   return (
     <div
       ref={containerRef}
-      className={`pointer-events-none ${
+      className={`${
         isHero
-          ? 'absolute inset-0 overflow-hidden select-none'
-          : 'fixed inset-0 overflow-hidden select-none -z-10'
+          ? 'relative size-full overflow-hidden select-none pointer-events-auto touch-pan-y'
+          : 'fixed inset-0 pointer-events-none overflow-hidden select-none -z-10'
       } ${className}`}
       style={
         isHero
           ? {
-              maskImage: 'radial-gradient(ellipse 95% 90% at 55% 45%, black 75%, transparent 100%)',
-              WebkitMaskImage: 'radial-gradient(ellipse 95% 90% at 55% 45%, black 75%, transparent 100%)',
+              maskImage: 'radial-gradient(circle at 50% 40%, black 80%, transparent 100%)',
+              WebkitMaskImage: 'radial-gradient(circle at 50% 40%, black 80%, transparent 100%)',
             }
           : undefined
       }
-      aria-hidden="true"
     >
-      <canvas ref={canvasRef} className="block size-full" />
+      <canvas ref={canvasRef} aria-hidden="true" className="block size-full" />
 
       {/* Consola interactiva para que los usuarios añadan ideas directamente al cerebro */}
       {isHero && (
-        <div className="pointer-events-auto absolute bottom-4 sm:bottom-6 right-4 sm:right-8 z-30 w-[calc(100%-2rem)] max-w-[340px] sm:max-w-[360px]">
+        <div className="pointer-events-auto absolute bottom-2.5 left-2.5 right-2.5 z-30">
           <div
-            className={`flex flex-col gap-2 rounded-2xl border bg-black/75 p-3 backdrop-blur-xl shadow-[0_12px_32px_rgba(0,0,0,0.7)] transition-all ${
+            className={`flex flex-col gap-2 rounded-2xl border bg-black/80 p-2.5 sm:p-3 backdrop-blur-xl shadow-[0_12px_32px_rgba(0,0,0,0.7)] transition-all ${
               justConnected
                 ? 'border-accent shadow-[0_0_24px_rgba(45,212,191,0.4)]'
                 : 'border-white/10 hover:border-accent/40'
