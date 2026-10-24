@@ -84,8 +84,7 @@ export function Contact() {
       return;
     }
 
-    // Fallback garantizado cuando aún no hay API key configurada en Vercel:
-    // Abre Gmail Web directamente en una nueva pestaña (funciona en cualquier navegador sin apps locales)
+    // Fallback cuando aún no hay API key de Web3Forms:
     const encodedSubject = encodeURIComponent(
       formData.subject || `Contacto de ${formData.name} desde el Portafolio`
     );
@@ -93,8 +92,20 @@ export function Contact() {
       `Hola Juan Felipe,\n\nMi nombre es: ${formData.name}\nMi correo: ${formData.email}\n\nMensaje:\n${formData.message}`
     );
 
-    const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${profile.email}&su=${encodedSubject}&body=${encodedBody}`;
-    window.open(gmailUrl, '_blank', 'noopener,noreferrer');
+    const isMobile =
+      typeof navigator !== 'undefined' &&
+      /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+
+    if (isMobile) {
+      // En dispositivos móviles, mailto: abre INMEDIATAMENTE la aplicación nativa de Gmail / correo
+      const mailtoUrl = `mailto:${profile.email}?subject=${encodedSubject}&body=${encodedBody}`;
+      window.location.href = mailtoUrl;
+    } else {
+      // En computador de escritorio, abre Gmail Web en una nueva pestaña
+      const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${profile.email}&su=${encodedSubject}&body=${encodedBody}`;
+      window.open(gmailUrl, '_blank', 'noopener,noreferrer');
+    }
+
     setStatus('success');
   };
 
@@ -169,12 +180,19 @@ export function Contact() {
                 </button>
 
                 <a
-                  href={gmailDirectUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
+                  href={`mailto:${profile.email}?subject=Contacto%20desde%20Portafolio`}
+                  onClick={(e) => {
+                    const isMobile =
+                      typeof navigator !== 'undefined' &&
+                      /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+                    if (!isMobile) {
+                      e.preventDefault();
+                      window.open(gmailDirectUrl, '_blank', 'noopener,noreferrer');
+                    }
+                  }}
                   id="btn-open-gmail"
                   className="inline-flex items-center gap-2 rounded-xl border border-border bg-white/[0.02] px-4 py-2.5 text-xs font-semibold text-foreground transition-colors hover:border-accent/40 hover:bg-white/[0.05]"
-                  title="Abrir directamente en Gmail Web"
+                  title="Abrir directamente en la aplicación de Gmail o correo"
                 >
                   <MailIcon className="size-4 text-accent" />
                   <span>Abrir en Gmail</span>
