@@ -29,7 +29,7 @@ export const profile: Profile = {
   socials: [
     { label: 'GitHub', url: 'https://github.com/IISpaRRowII' },
     { label: 'LinkedIn', url: 'https://www.linkedin.com/in/juan-felipe-vargas-giraldo-7a538130b?utm_source=share_via&utm_content=profile&utm_medium=member_android' },
-    { label: 'Instagram', url: 'https://www.instagram.com/pip_3.code?xtok=Ynk1enB0M21ob2w3' },
+    { label: 'Instagram', url: 'https://www.instagram.com/juan._.vg_?cplk=YnB2enU5Yms5Z3Bj' },
     { label: 'Discord', url: 'https://discord.com/users/712347395563847681' },
   ],
 };

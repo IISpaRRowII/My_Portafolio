@@ -137,7 +137,7 @@ export function Contact() {
           </div>
 
           <h2 className="mt-4 text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
-            Ponte en Contacto
+            Contactame
           </h2>
 
           <p className="mt-3 text-base text-muted sm:text-lg">

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { Footer, Navbar } from "@/components/layout";
+import { NeuralNetwork } from "@/components/ui/NeuralNetwork";
 import { profile } from "@/data/portafolio";
 import "./globals.css";
 
@@ -27,13 +28,16 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       className={`${geistSans.variable} ${geistMono.variable} h-full scroll-smooth antialiased`}
     >
       <body className="relative flex min-h-full flex-col font-sans overflow-x-hidden selection:bg-accent selection:text-background">
-        {/* Capa de fondo espacial con textura y esferas de luz flotantes */}
+        {/* Capa de fondo espacial con textura, esferas de luz y red neuronal global */}
         <div
           aria-hidden="true"
           className="pointer-events-none fixed inset-0 -z-10 overflow-hidden"
         >
           {/* Malla de profundidad sutil */}
           <div className="absolute inset-0 bg-[radial-gradient(rgba(255,255,255,0.06)_1px,transparent_1px)] bg-[size:36px_36px] opacity-60" />
+
+          {/* Red neuronal ambiental suave en toda la página */}
+          <NeuralNetwork variant="global" />
 
           {/* Orbe flotante 1 (Superior izquierdo, color acento turquesa) */}
           <div className="absolute -left-32 -top-20 h-[500px] w-[500px] rounded-full bg-accent/15 blur-[130px] animate-float-slow" />

@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { Container } from '@/components/layout';
-import { ArrowRightIcon, MailIcon, TerminalIcon } from '@/components/ui/icons';
+import { ArrowRightIcon, MailIcon } from '@/components/ui/icons';
+import { NeuralNetwork } from '@/components/ui/NeuralNetwork';
 import { profile } from '@/data/portafolio';
 
 export function Hero() {
@@ -10,21 +11,25 @@ export function Hero() {
     'React',
     'Node.js',
     'Python',
+    'Java',
     'Solidity',
     'SQL',
   ];
 
   return (
-    <section className="relative overflow-hidden py-20 sm:py-28 lg:py-32">
+    <section className="relative overflow-hidden py-20 sm:py-28 lg:py-32 min-h-[580px] flex items-center">
+      {/* Red neuronal interactiva 3D en forma de cerebro conectando ideas */}
+      <NeuralNetwork variant="hero" />
+
       {/* Luz ambiental sutil de fondo (glow gradient) */}
       <div
         aria-hidden="true"
         className="pointer-events-none absolute left-1/2 top-0 -z-10 -translate-x-1/2 -translate-y-1/4 opacity-40 blur-3xl"
       >
-        <div className="h-[380px] w-[620px] rounded-full bg-gradient-to-tr from-accent/20 via-accent/10 to-transparent" />
+        <div className="h-[420px] w-[680px] rounded-full bg-gradient-to-tr from-accent/20 via-accent/10 to-transparent" />
       </div>
 
-      <Container>
+      <Container className="relative z-10 w-full">
         <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-12 lg:gap-8">
           {/* Columna Izquierda: Información principal y llamados a la acción */}
           <div className="lg:col-span-7">
@@ -94,65 +99,8 @@ export function Hero() {
             </div>
           </div>
 
-          {/* Columna Derecha: Tarjeta interactiva estilo Terminal / Inspector de Código flotante */}
-          <div className="lg:col-span-5 animate-float-slow">
-            <div className="floating-glass relative rounded-2xl border border-white/10 p-5">
-              {/* Barra superior de la ventana */}
-              <div className="flex items-center justify-between border-b border-border/60 pb-3">
-                <div className="flex items-center gap-2">
-                  <span className="size-3 rounded-full bg-red-500/80 inline-block" />
-                  <span className="size-3 rounded-full bg-yellow-500/80 inline-block" />
-                  <span className="size-3 rounded-full bg-emerald-500/80 inline-block" />
-                </div>
-                <div className="flex items-center gap-1.5 font-mono text-xs text-muted">
-                  <TerminalIcon className="size-3.5 text-accent" />
-                  <span>developer.ts</span>
-                </div>
-                <span className="w-10" />
-              </div>
-
-              {/* Contenido en código simulado */}
-              <div className="mt-4 font-mono text-xs leading-relaxed text-zinc-300">
-                <p>
-                  <span className="text-purple-400">const</span>{' '}
-                  <span className="text-blue-400">engineer</span> = {'{'}
-                </p>
-                <p className="pl-4">
-                  <span className="text-muted">name:</span>{' '}
-                  <span className="text-emerald-300">&apos;Juan Felipe Vargas&apos;</span>,
-                </p>
-                <p className="pl-4">
-                  <span className="text-muted">title:</span>{' '}
-                  <span className="text-emerald-300">&apos;Ingeniero Informático&apos;</span>,
-                </p>
-                <p className="pl-4">
-                  <span className="text-muted">location:</span>{' '}
-                  <span className="text-emerald-300">&apos;Medellín, Colombia&apos;</span>,
-                </p>
-                <p className="pl-4">
-                  <span className="text-muted">focus:</span> [
-                </p>
-                <p className="pl-8 text-emerald-300">
-                  &apos;Web Full Stack&apos;, &apos;Mobile Apps&apos;, &apos;Clean Architecture&apos;
-                </p>
-                <p className="pl-4">],</p>
-                <p className="pl-4">
-                  <span className="text-muted">openToWork:</span>{' '}
-                  <span className="text-accent font-semibold">true</span>
-                </p>
-                <p>{'}'};</p>
-
-                <div className="mt-4 rounded-lg border border-border/50 bg-black/40 p-3 text-[11px]">
-                  <p className="text-accent">
-                    <span className="text-muted">&gt;</span> engineer.buildSolution()
-                  </p>
-                  <p className="text-muted/80 mt-1">
-                    ✓ Software escalable, interfaces modernas y código limpio listo para producción.
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
+          {/* Columna Derecha: Escenario completamente despejado y limpio para el Cerebro 3D */}
+          <div className="hidden lg:col-span-5 lg:block pointer-events-none" />
         </div>
       </Container>
     </section>
